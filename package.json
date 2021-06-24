@@ -41,6 +41,7 @@
     "babel-preset-es2017": "^6.24.1",
     "dotenv": "^10.0.0",
     "express": "^4.17.1",
+    "mongoose": "^5.12.14",
     "nodemon": "^2.0.7",
     "rimraf": "^3.0.2",
     "rimraff": "^0.0.1-security"
