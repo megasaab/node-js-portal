@@ -4,6 +4,7 @@ import * as uuid from 'uuid';
 import { MailService } from "./mail-service";
 import { TokenService } from "./token-service";
 import { UserDto } from "../dtos/user-dto";
+import { SundryService } from "./sundry/sundry-service";
 
 
 const mailService = new MailService();
@@ -38,5 +39,33 @@ export class UserService {
 
         user.isActivated = true;
         await user.save();
+    }
+
+    async login(email, password) {
+        const user = await userModel.findOne({email});
+        if(!user) {
+            return new SundryService().sendStatus(res, 404);
+        }
+        const isEqualPass = await bcrypt.compare(password, user.password);
+
+        if(!isEqualPass) {
+            return new SundryService().sendStatus(res, 401);
+        }
+        
+        const userDto = new UserDto(user);
+        const tokens = tokenService.generateToken({...userDto});
+
+        await tokenService.saveToken(userDto.id, tokens.refreshToken);
+
+        return {
+            ...tokens,
+            user: userDto
+        }
+
+    }
+
+    async logout(refreshToken) {
+        const token = await tokenService.removeToken(refreshToken);
+        return token;
     }
 }
