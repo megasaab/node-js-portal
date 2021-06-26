@@ -4,7 +4,7 @@ import { UserController } from '../controller/user-controller';
 const userController = new UserController();
 export const router = new express.Router();
 
-router.post('/registration');
+router.post('/registration', userController.registration);
 router.post('/login');
 router.post('/logout');
 router.get('/activate/:link');
