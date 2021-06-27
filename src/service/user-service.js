@@ -12,7 +12,7 @@ const tokenService = new TokenService();
 
 export class UserService {
     async registration(email,password) {
-        const candidate = await userModel.findOne({email}) 
+        const candidate = await userModel.findOne({email})
         if (candidate) {
             throw new Error(`User with ${email} already exist`);
         };
@@ -51,7 +51,7 @@ export class UserService {
         if(!isEqualPass) {
             return new SundryService().sendStatus(res, 401);
         }
-        
+
         const userDto = new UserDto(user);
         const tokens = tokenService.generateToken({...userDto});
 
@@ -67,5 +67,28 @@ export class UserService {
     async logout(refreshToken) {
         const token = await tokenService.removeToken(refreshToken);
         return token;
+    }
+
+    async refresh(refreshToken) {
+        if (!refreshToken) {
+            throw new Error('null token')
+        }
+
+        const userData = tokenService.validateRefreshToken(refreshToken);
+        const tokenFromDb = await tokenService.findToken(refreshToken);
+
+        if(!userData || !tokenFromDb) {
+            throw new Error('unauthorized error')
+        }
+
+        const user = await userModel.findById(userData.id);
+        const userDto = new UserDto(user);
+        const tokens = tokenService.generateToken({...userDto});
+        await tokenService.saveToken(userDto.id, tokens.refreshToken);
+
+        return {
+            ...tokens,
+            user: userDto
+        }
     }
 }
