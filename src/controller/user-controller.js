@@ -60,8 +60,9 @@ export class UserController {
             const {email, password} = req.body;
             const userData = await new UserService().refresh(refreshToken);
             res.cookie('refreshToken', userData.refreshToken, {maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true, secure:false});
+            return res.json(userData);
         } catch (error) {
-
+            return res.json(error);
         }
     }
 
