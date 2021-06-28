@@ -66,6 +66,7 @@ export class UserController {
         }
     }
 
+    //TODO GET ALL USERS
     async getUsers(req,res,next) {
         try {
             res.json(['123']);
@@ -73,6 +74,29 @@ export class UserController {
 
         }
     }
+
+    async createResume(req,res, next) {
+        try {
+            const {name, description, position} = req.body;
+            const resumeData = await new UserService().createResume(name, description, position, req.user.id);
+            return res.json(resumeData);
+
+        } catch (error) {
+            sundryService.sendStatus(res, 404);
+            console.log(error);
+        }
+    }
+
+    async getResume(req,res,next) {
+        try {
+           const resumeData = await new UserService().getResume(req.user.id);
+           return res.json(resumeData)
+        } catch (error) {
+            sundryService.sendStatus(res, 404);
+            console.log(error);
+        }
+    }
+
 }
 
 

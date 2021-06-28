@@ -5,12 +5,24 @@ import { MailService } from "./mail-service";
 import { TokenService } from "./token-service";
 import { UserDto } from "../dtos/user-dto";
 import { SundryService } from "./sundry/sundry-service";
+import { resumeModel } from "../models/resume-model";
 
 
 const mailService = new MailService();
 const tokenService = new TokenService();
 
 export class UserService {
+
+    async createResume(name, description, position, user) {
+        const resume = await resumeModel.create({name, position, description, user});
+        return resume;
+    }
+
+    async getResume(userId) {
+        const resume = await resumeModel.find({user: userId})
+        return resume;
+    }
+
     async registration(email,password) {
         const candidate = await userModel.findOne({email})
         if (candidate) {
